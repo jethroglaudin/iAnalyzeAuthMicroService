@@ -7,5 +7,6 @@ public abstract class SqlCommands {
     //    public static final String SQL_FIND_BY_ID = "SELECT id, username, email, password " +
 //            "FROM usersauth WHERE id = ?";
     public static final String SQL_FIND_BY_ID = String.format("SELECT * FROM usersauth WHERE id = ?");
+    public static final String SQL_FIND_BY_USERNAME = String.format("SELECT * FROM usersauth WHERE username = ?");
     public static final String SQL_FIND_BY_EMAIL = "SELECT * FROM usersauth WHERE email = ?";
 }
