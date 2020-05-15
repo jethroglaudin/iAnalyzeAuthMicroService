@@ -2,15 +2,18 @@ package com.iAnalyze.AuthMicroService.jwt;
 
 import com.iAnalyze.AuthMicroService.dao.UserDao;
 import com.iAnalyze.AuthMicroService.models.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class JwtOps {
@@ -20,22 +23,49 @@ public class JwtOps {
     @Autowired
     UserDao userDao;
 
-    public Map<String, String> generateToken(String email, String password) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(email, password);
+    public Map<String, String> generateToken(String username) {
+        return createToken(username);
     }
 
-    private Map<String, String> createToken(String email, String username) {
-        User userDetails = userDao.findByEmail(email);
+    private Map<String, String> createToken(String username) {
+        User userDetails = userDao.findByUsername(username);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", userDetails.getId().toString());
+        claims.put("email", userDetails.getEmail());
         String token = environment.getProperty("token.prefix") + Jwts.builder()
-                .claim("id", userDetails.getId())
-                .claim("username", userDetails.getUsername())
-                .claim("email", userDetails.getEmail())
+                .setClaims(claims)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(environment.getProperty("token.expiration_time"))))
                 .signWith(SignatureAlgorithm.HS256, environment.getProperty("token.secret")).compact();
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
         return map;
+    }
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser().setSigningKey(environment.getProperty("token.secret")).parseClaimsJws(token).getBody();
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails){
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 }
