@@ -8,9 +8,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 @SpringBootApplication
 public class AuthMicroServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AuthMicroServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AuthMicroServiceApplication.class, args);
+    }
 
 
 }

@@ -28,7 +28,6 @@ public class UserDataAccessService implements UserDao {
 
     @Override
     public Integer registerUser(UUID id, User user) {
-
         String hashedPassword = passwordEncoder.encode(user.getPassword());
 
         try {
@@ -39,20 +38,9 @@ public class UserDataAccessService implements UserDao {
                     user.getEmail(),
                     hashedPassword
             );
-//            KeyHolder keyHolder = new GeneratedKeyHolder();
-//            jdbcTemplate.update(connection -> {
-//                PreparedStatement ps = connection.prepareStatement(SqlCommands.SQL_CREATE, new String[]{"id"});
-//                ps.setString(0, newUserId.toString());
-//                ps.setString(1, username);
-//                ps.setString(2, email);
-//                ps.setString(3, hashedPassword);
-//                return ps;
-//            }, keyHolder);
-//            return (Integer) keyHolder.getKeys().get("id");
         } catch(Exception ex){
             throw new CustomRuntimeException("Invalid details. Failed to create account");
         }
-
     }
 
     @Override
