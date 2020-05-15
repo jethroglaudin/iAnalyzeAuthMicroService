@@ -8,6 +8,5 @@ public interface UserService {
 
     User validateUser(String email, String password);
 
-//    User registerUser(UUID id, String username, String email, String password);
     User registerUser(UUID id, User user);
 }
