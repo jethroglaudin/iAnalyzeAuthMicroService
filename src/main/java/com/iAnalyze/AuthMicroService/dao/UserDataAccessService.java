@@ -66,6 +66,11 @@ public class UserDataAccessService implements UserDao {
         return jdbcTemplate.queryForObject(SqlCommands.SQL_FIND_BY_EMAIL, new Object[]{email}, userRowMapper);
     }
 
+    @Override
+    public User findByUsername(String username) {
+        return jdbcTemplate.queryForObject(SqlCommands.SQL_FIND_BY_USERNAME, new Object[]{username}, userRowMapper);
+    }
+
 //    @Override
 //    public User findById(String userId) {
 //        return null;
