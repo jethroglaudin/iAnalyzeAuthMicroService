@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         if(count > 0)
             throw new CustomRuntimeException("Email already in use");
 
-        Integer userId = userDao.registerUser(newUserId, user);
+        userDao.registerUser(newUserId, user);
         return user;
     }
 }
