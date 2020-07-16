@@ -1,4 +1,4 @@
-CREATE DATABASE usersauth;
+CREATE DATABASE auth;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
