@@ -37,11 +37,17 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Map<String, String>> registerUser(@RequestBody @Valid User user) {
-        userService.registerUser(null, user);
-        Map<String, String> map = new HashMap<>();
-        map.put("message", "registered successfully");
-        return new ResponseEntity<>(map, HttpStatus.CREATED);
+    public ResponseEntity<?> registerUser(@RequestBody @Valid User user) throws CustomRuntimeException {
+        try{
+            userService.registerUser(null, user);
+            Map<String, String> map = new HashMap<>();
+            map.put("message", "registered successfully");
+            return new ResponseEntity<>(map, HttpStatus.CREATED);
+        } catch(Exception ex){
+//            throw new CustomRuntimeException("Registration Unsuccessful");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex);
+        }
+
     }
 
     @PostMapping("/login")
@@ -50,9 +56,10 @@ public class UserController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(auth.getUsername(), auth.getPassword())
             );
+            return new ResponseEntity<>(jwtOps.generateToken(auth.getUsername()), HttpStatus.OK);
         } catch (Exception ex) {
-            throw new CustomRuntimeException("Invalid email/password");
+//            throw new CustomRuntimeException("Invalid email/password");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex);
         }
-        return new ResponseEntity<>(jwtOps.generateToken(auth.getUsername()), HttpStatus.OK);
     }
 }
