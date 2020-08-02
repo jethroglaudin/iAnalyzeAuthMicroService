@@ -23,15 +23,19 @@ public class JwtOps {
     @Autowired
     UserDao userDao;
 
+
     public Map<String, String> generateToken(String username) {
         return createToken(username);
     }
 
     private Map<String, String> createToken(String username) {
         User userDetails = userDao.findByUsername(username);
+        User user = userDao.findByUsername2(username);
+        System.out.println(user.getEmail());
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", userDetails.getId().toString());
-        claims.put("email", userDetails.getEmail());
+        claims.put("email", user.getEmail());
+        claims.put("username", userDetails.getUsername());
         String token = environment.getProperty("token.prefix") + Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
@@ -58,7 +62,10 @@ public class JwtOps {
 
     public Boolean validateToken(String token, UserDetails userDetails){
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        if(username != null){
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        }
+        return false;
     }
 
     private boolean isTokenExpired(String token) {
