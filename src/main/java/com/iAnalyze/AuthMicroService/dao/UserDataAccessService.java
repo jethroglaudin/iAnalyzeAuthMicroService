@@ -71,6 +71,12 @@ public class UserDataAccessService implements UserDao {
         return jdbcTemplate.queryForObject(SqlCommands.SQL_FIND_BY_USERNAME, new Object[]{username}, userRowMapper);
     }
 
+    public User findByUsername2(String username) {
+        return jdbcTemplate.queryForObject(SqlCommands.SQL_FIND_BY_USERNAME, new Object[]{username}, userRowMapper);
+    }
+
+
+
 //    @Override
 //    public User findById(String userId) {
 //        return null;
@@ -85,7 +91,7 @@ public class UserDataAccessService implements UserDao {
 //        String stringId = rs.getString("id");
         UUID id = UUID.fromString(rs.getString("id"));
         String username = rs.getString("username");
-        String email = rs.getString("username");
+        String email = rs.getString("email");
         String password = rs.getString("password");
         return
                 new User(
